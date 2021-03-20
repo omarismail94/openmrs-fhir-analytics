@@ -25,7 +25,7 @@ services:
 
   mysql:
     image: mysql:5.7
-    command: /docker-entrypoint-initdb.d/init.sh
+    command: sh /docker-entrypoint-initdb.d/init.sh
     restart: "no"
     container_name: openmrs-fhir-mysql
     depends_on:
