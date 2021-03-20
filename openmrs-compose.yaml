@@ -15,24 +15,28 @@
 
 version: '2.1'
 services:
-  mysql:
-    image: mysql:5.7
-    command: "mysqld --character-set-server=utf8 --collation-server=utf8_general_ci"
+  proxy:
+    image: gcr.io/cloudsql-docker/gce-proxy:1.19.1
+    command: /cloud_sql_proxy -instances=INSTANCE_CONNECTION_NAME=tcp:0.0.0.0:3306
     restart: always
     ports:
       - "3306:3306"
+    container_name: proxy-cloud-sql
+
+  mysql:
+    image: mysql:5.7
+    command: /docker-entrypoint-initdb.d/init.sh
+    restart: "no"
     container_name: openmrs-fhir-mysql
-    healthcheck:
-      test: "exit 0"
+    depends_on:
+      - proxy
     environment:
       - MYSQL_DATABASE=openmrs
       - MYSQL_ROOT_PASSWORD=debezium
-      - MYSQL_USER=mysqluser
-      - MYSQL_PASSWORD=mysqlpw
-      - MYSQL_ROOT_HOST=%    # Allow docker containers to connect to mysql
+      - MYSQL_ROOT_HOST=proxy-cloud-sql    # Allow docker containers to connect to cloud proxy
       - DATABASE_DUMP_MODE=${DATABASE_DUMP_MODE:-small}  # for big data dump set 'big', for small data dump set 'small' (default mode)
     volumes:
-      - ./utils/mysql.cnf:/etc/mysql/conf.d/custom.cnf  # mysql config preconfigured to allow binlog/debezium
+      # - ./utils/mysql.cnf:/etc/mysql/conf.d/custom.cnf  # mysql config preconfigured to allow binlog/debezium
       #- ./data:/var/lib/mysql
       - ./utils/dbdump:/docker-entrypoint-initdb.d # utils/dbdump/init.sh will be executed during initial runtime
 
@@ -48,7 +52,7 @@ services:
       test: "exit 0"
     environment:
       DB_DATABASE: 'openmrs'
-      DB_HOST: openmrs-fhir-mysql
+      DB_HOST: proxy-cloud-sql
       DB_USERNAME: 'mysqluser'
       DB_PASSWORD: 'mysqlpw'
       DB_CREATE_TABLES: 'false'

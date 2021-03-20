@@ -18,15 +18,15 @@ echo "[Entrypoint] Database dump started";
 echo "[Entrypoint] Databse dump mode: $DATABASE_DUMP_MODE";
 if [[ "$DATABASE_DUMP_MODE" == "big" ]]; then
     echo "[Entrypoint] dumping openmrs_big_sql";
-    mysql -u"root" -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"  <  /docker-entrypoint-initdb.d/openmrs_big_sql;
+    mysql -u"root" -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE" -h"$MYSQL_ROOT_HOST" <  /docker-entrypoint-initdb.d/openmrs_big_sql;
 else
     echo "[Entrypoint] dumping openmrs_small_sql";
-    mysql -u"root" -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"  <  /docker-entrypoint-initdb.d/openmrs_small_sql;
+    mysql -u"root" -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE" -h"$MYSQL_ROOT_HOST" <  /docker-entrypoint-initdb.d/openmrs_small_sql;
 fi
 
 echo "[Entrypoint] dumping atomfeed_db_sql";
-mysql -u"root" -p"$MYSQL_ROOT_PASSWORD"  <  /docker-entrypoint-initdb.d/atomfeed_db_sql;
+mysql -u"root" -p"$MYSQL_ROOT_PASSWORD" -h"$MYSQL_ROOT_HOST" <  /docker-entrypoint-initdb.d/atomfeed_db_sql;
 echo "[Entrypoint] dumping fhir_concept_sources_sql";
-mysql -u"root" -p"$MYSQL_ROOT_PASSWORD"  <  /docker-entrypoint-initdb.d/fhir_concept_sources_sql;
+mysql -u"root" -p"$MYSQL_ROOT_PASSWORD"  -h"$MYSQL_ROOT_HOST" <  /docker-entrypoint-initdb.d/fhir_concept_sources_sql;
 
 echo "[Entrypoint] Database dump ended";
