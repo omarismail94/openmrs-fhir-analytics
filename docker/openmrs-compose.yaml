@@ -36,9 +36,15 @@ services:
       - MYSQL_ROOT_HOST=proxy-cloud-sql    # Allow docker containers to connect to cloud proxy
       - DATABASE_DUMP_MODE=${DATABASE_DUMP_MODE:-small}  # for big data dump set 'big', for small data dump set 'small' (default mode)
     volumes:
+<<<<<<< HEAD:openmrs-compose.yaml
       # - ./utils/mysql.cnf:/etc/mysql/conf.d/custom.cnf  # mysql config preconfigured to allow binlog/debezium
       #- ./data:/var/lib/mysql
       - ./utils/dbdump:/docker-entrypoint-initdb.d # utils/dbdump/init.sh will be executed during initial runtime
+=======
+      - ../utils/mysql.cnf:/etc/mysql/conf.d/custom.cnf  # mysql config preconfigured to allow binlog/debezium
+      #- ../data:/var/lib/mysql
+      - ../utils/dbdump:/docker-entrypoint-initdb.d # utils/dbdump/init.sh will be executed during initial runtime
+>>>>>>> upstream/master:docker/openmrs-compose.yaml
 
   openmrs:
     restart: "always"
